@@ -3,7 +3,6 @@
 //
 
 #include <geometry.h>
-#include <cmath>
 
 XYZ& XYZ::operator-= (const XYZ& vec){
     this->xyz_[X_LOC] -= vec[X_LOC];

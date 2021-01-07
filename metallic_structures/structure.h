@@ -26,30 +26,28 @@ enum DEF_MATRICES_ENUM {
 using Lattice = std::vector<Atom>;
 
 struct Structure {
-    int size[3];
+    int size;
     XYZ period;
     Lattice lattice;
 };
 
 template<ATOM_ENUM a_type>
-void createStructure(Structure& s, double a, int x_size, int y_size, int z_size) {
+void createStructure(Structure& s, double lattice_constant, int size) {
     s.lattice = {};
-    s.size[X_LOC] = x_size;
-    s.size[Y_LOC] = y_size;
-    s.size[Z_LOC] = z_size;
-    s.period = {x_size * a, y_size * a, z_size * a};
+    s.size = size;
+    s.period = {size * lattice_constant, size * lattice_constant, size * lattice_constant};
 
-    for (int i = 0; i < x_size; ++i) {
-        for (int j = 0; j < y_size; ++j) {
-            for (int k = 0; k < z_size; ++k) {
-                s.lattice.emplace_back(Atom(a_type, (0 + i) * a, (0 + j) * a,
-                                            (0 + k) * a));
-                s.lattice.emplace_back(Atom(a_type, (0 + i) * a, (0.5 + j) * a,
-                                            (0.5 + k) * a));
-                s.lattice.emplace_back(Atom(a_type, (0.5 + i) * a, (0.5 + j) * a,
-                                            (0 + k) * a));
-                s.lattice.emplace_back(Atom(a_type, (0.5 + i) * a, (0 + j) * a,
-                                            (0.5 + k) * a));
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            for (int k = 0; k < size; ++k) {
+                s.lattice.emplace_back(Atom(a_type, (0 + i) * lattice_constant, (0 + j) * lattice_constant,
+                                            (0 + k) * lattice_constant));
+                s.lattice.emplace_back(Atom(a_type, (0 + i) * lattice_constant, (0.5 + j) * lattice_constant,
+                                            (0.5 + k) * lattice_constant));
+                s.lattice.emplace_back(Atom(a_type, (0.5 + i) * lattice_constant, (0.5 + j) * lattice_constant,
+                                            (0 + k) * lattice_constant));
+                s.lattice.emplace_back(Atom(a_type, (0.5 + i) * lattice_constant, (0 + j) * lattice_constant,
+                                            (0.5 + k) * lattice_constant));
             }
         }
     }

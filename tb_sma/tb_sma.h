@@ -11,31 +11,23 @@
 
 
 template<ZPERIOD zPeriodic>
-double atomEnergy(const Parameters& p, const Lattice& lattice, int atomId,
-                  const XYZ& period,
+double atomEnergy(const Parameters& p, const Structure& str, int atomId,
                   const Matrix& deformation,
                   DEF_MATRICES_ENUM defType = NO_DEF) {
 
-//    if (defMatrix != NO_DEF) {
-//        lattice *= deformation;
-//        //period *= deformation;
-//    }
-
-    XYZ pivot_atom_pos = lattice[atomId].pos();
+    XYZ pivot_atom_pos = str.lattice[atomId].pos();
     XYZ tmp_atom_pos;
     double repulsive_energy = 0, band_energy = 0, r_ij;
 
-
-    XYZ deformed_period = deformation * period;
-    // TODO: replace /3 на size из structure
-    double cutoff = 1.7 * fmax(fmax(deformed_period[0], deformed_period[1]), deformed_period[2]) / 3;
+    XYZ deformed_period = deformation * str.period;
+    double cutoff = 4 * fmax(fmax(deformed_period[0], deformed_period[1]), deformed_period[2]) / str.size;
 
     int count = 0;
 
-    for (size_t j = 0; j < lattice.size(); ++j) {
+    for (size_t j = 0; j < str.lattice.size(); ++j) {
         if (atomId != j) {
-            tmp_atom_pos = lattice[j].pos();
-            r_ij = minimizeDistance<zPeriodic>(pivot_atom_pos, tmp_atom_pos, period, deformation, defType);
+            tmp_atom_pos = str.lattice[j].pos();
+            r_ij = minimizeDistance<zPeriodic>(pivot_atom_pos, tmp_atom_pos, str.period, deformation, defType);
             if (r_ij < cutoff) {
                 // std::cout << r_ij << std::endl;
                 count += 1;
@@ -54,26 +46,28 @@ double atomEnergy(const Parameters& p, const Lattice& lattice, int atomId,
 }
 
 template<ZPERIOD zPeriodic>
-double fullEnergy(const Parameters& params, const Structure& str, const Matrix& deformation, DEF_MATRICES_ENUM defType = NO_DEF) {
+double fullEnergy(const Parameters& params, const Structure& str,
+                  const Matrix& deformation,
+                  DEF_MATRICES_ENUM defType = NO_DEF) {
+
     double energy = 0;
 
-    Matrix identity;
     for(size_t i = 0; i < str.lattice.size(); ++i){
-        energy += atomEnergy<zPeriodic>(params, str.lattice, i, str.period, deformation, defType);
+        energy += atomEnergy<zPeriodic>(params, str, i, deformation, defType);
     }
+
     return energy;
 }
 
 template<ZPERIOD zPeriodic, MATERIAL_ENUM material>
-MaterialQuantities computeQuantities(const Parameters& p, Structure& str, double def_rate = 0.01){
-    const int kNumberOfAtoms = str.lattice.size();
-    constexpr int kAtomId = 55;
+MaterialQuantities computeQuantities(const Parameters& p, Structure& str, double def_rate = 0.005){
 
     DefMatrices plus_def(def_rate);
     DefMatrices minus_def(-def_rate);
-    double e_coh = atomEnergy<zPeriodic>(
-            p, str.lattice, 0, str.period, plus_def.to_vec_[NO_DEF]);
 
+    double e_coh = atomEnergy<zPeriodic>(p, str, 0, plus_def.to_vec_[NO_DEF]);
+
+    const int kNumberOfAtoms = str.lattice.size();
     double e_equilibrium = e_coh * kNumberOfAtoms;
 
     double e_minus = 0, e_plus = 0;
@@ -83,30 +77,24 @@ MaterialQuantities computeQuantities(const Parameters& p, Structure& str, double
 
     double B = 0;
 
-    e_plus = kNumberOfAtoms * atomEnergy<zPeriodic>(
-            p, str.lattice, kAtomId, str.period, plus_def.to_vec_[B_DEF], B_DEF);
+    e_plus = fullEnergy<zPeriodic>(p, str, plus_def.to_vec_[B_DEF], B_DEF);
 
-    e_minus = kNumberOfAtoms * atomEnergy<zPeriodic>(
-            p, str.lattice, kAtomId, str.period, minus_def.to_vec_[B_DEF], B_DEF);
+    e_minus = fullEnergy<zPeriodic>(p, str, minus_def.to_vec_[B_DEF], B_DEF);
 
     B = magic_const * 2 / (9 * v0) * (e_plus - 2 * e_equilibrium + e_minus) / (def_rate * def_rate);
 
     double e_c11_der = 0;
 
-    e_plus = kNumberOfAtoms * atomEnergy<zPeriodic>(
-            p, str.lattice, kAtomId, str.period, plus_def.to_vec_[C11_DEF], C11_DEF);
+    e_plus = fullEnergy<zPeriodic>(p, str,plus_def.to_vec_[C11_DEF], C11_DEF);
 
-    e_minus = kNumberOfAtoms * atomEnergy<zPeriodic>(
-            p, str.lattice, kAtomId, str.period, minus_def.to_vec_[C11_DEF], C11_DEF);
+    e_minus = fullEnergy<zPeriodic>(p, str, minus_def.to_vec_[C11_DEF], C11_DEF);
 
     e_c11_der = (e_plus - 2 * e_equilibrium + e_minus) / (def_rate * def_rate);
 
     double e_c12_der = 0;
 
-    e_plus = kNumberOfAtoms * atomEnergy<zPeriodic>(
-            p, str.lattice, kAtomId, str.period, plus_def.to_vec_[C12_DEF], C12_DEF);
-    e_minus = kNumberOfAtoms * atomEnergy<zPeriodic>(
-            p, str.lattice, kAtomId, str.period, minus_def.to_vec_[C12_DEF], C12_DEF);
+    e_plus = fullEnergy<zPeriodic>(p, str, plus_def.to_vec_[C12_DEF], C12_DEF);
+    e_minus = fullEnergy<zPeriodic>(p, str, minus_def.to_vec_[C12_DEF], C12_DEF);
 
     e_c12_der = (e_plus - 2 * e_equilibrium + e_minus) / (def_rate * def_rate);
 
@@ -118,9 +106,9 @@ MaterialQuantities computeQuantities(const Parameters& p, Structure& str, double
     e_plus = fullEnergy<zPeriodic>(p, str, plus_def.to_vec_[C44_DEF], C44_DEF);
     e_minus = fullEnergy<zPeriodic>(p, str, minus_def.to_vec_[C44_DEF], C44_DEF);
 
-    std::cout << "E_eq: " << e_equilibrium << std::endl;
-    std::cout << "E_plus: " << e_plus << "\t E_minus: " << e_minus << std::endl;
-    std::cout << "V0: " << v0 << std::endl;
+//    std::cout << "E_eq: " << e_equilibrium << std::endl;
+//    std::cout << "E_plus: " << e_plus << "\t E_minus: " << e_minus << std::endl;
+//    std::cout << "V0: " << v0 << std::endl;
     C44 = magic_const / (2 * v0) * (e_plus - 2 * e_equilibrium + e_minus) / (def_rate * def_rate);
 
     return {e_coh, B, C11, C12, C44, material};

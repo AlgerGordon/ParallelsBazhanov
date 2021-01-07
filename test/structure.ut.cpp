@@ -49,4 +49,6 @@ void TestMinimizeDist(){
 void TestStructure() {
     TestRunner tr;
     RUN_TEST(tr, TestMinimizeDist);
+    std::cout.flush();
+    std::cerr.flush();
 }
