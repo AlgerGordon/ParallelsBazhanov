@@ -1,0 +1,38 @@
+//
+// Created by General on 10.01.2021.
+//
+
+
+#include <tb_sma.h>
+
+void TestAlloyQuantities() {
+    {
+
+        double a0_cu = 3.6147;
+        Structure str_cu;
+        str_cu.createStructure(a0_cu, 3, ATOM_ENUM::CU);
+
+        Parameters p_CuCu(2.556, 0.086, 0.0, 1.224, 10.960, 2.278);
+
+        Parameters p_CoCo(2.378, 0.139, -0.852, 1.5247, 7.679, 2.139);
+
+        Parameters p_CuCo(2.405, -0.049, -1.905, 0.7356, 8.183, 3.344);
+
+        InteractionParameters aip(p_CuCu, p_CoCo, p_CuCo);
+
+        double E_Acoh = -4.386;
+
+        AlloyQuantities aq = computeAlloyQuantities(aip, str_cu, ATOM_ENUM::CO, E_Acoh);
+
+        std::cout << "\nCo-Cu:" << '\n';
+        std::cout << "Table E_sol: " << 0.4 << " Model: " << aq[A_E_SOL_LOC] << '\n';
+        std::cout << "Table E_inDim: " << -0.26 << "(-0.35 fitted) " << " Model: " << aq[A_E_DIM_IN_LOC] << '\n';
+        std::cout << "Table E_onDim: " << -1.04 << " Model: " << aq[A_E_DIM_ON_LOC] << '\n';
+
+
+        char prev = std::cout.fill ('_');
+        std::cout.width (40);
+        std::cout << '\n';
+        std::cout.fill(prev);
+    }
+}

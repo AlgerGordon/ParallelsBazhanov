@@ -27,12 +27,10 @@ public:
     XYZ& operator-= (const XYZ& vec);
     XYZ& operator*= (double m);
     XYZ& operator*= (const Matrix& m);
-    double dist(const XYZ& vec) const;
-    double eu_norm() const;
-
+    double eu_norm();
 };
 
-
+XYZ operator+ (const XYZ& lhs, const XYZ& rhs);
 XYZ operator- (const XYZ& lhs, const XYZ& rhs);
 XYZ operator* (const XYZ& lhs, double rhs);
 XYZ operator* (double lhs, const XYZ& rhs);

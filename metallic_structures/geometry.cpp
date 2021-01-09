@@ -3,6 +3,7 @@
 //
 
 #include <geometry.h>
+#include <cmath>
 
 XYZ& XYZ::operator-= (const XYZ& vec){
     this->xyz_[X_LOC] -= vec[X_LOC];
@@ -27,10 +28,20 @@ XYZ& XYZ::operator*= (const Matrix& m) {
     return *this;
 }
 
+double XYZ::eu_norm() {
+    return sqrt(xyz_[X_LOC] * xyz_[X_LOC] + xyz_[Y_LOC] * xyz_[Y_LOC] + xyz_[Z_LOC] * xyz_[Z_LOC]);
+}
+
 XYZ operator- (const XYZ& lhs, const XYZ& rhs) {
     return XYZ(lhs[X_LOC] - rhs[X_LOC],
                lhs[Y_LOC] - rhs[Y_LOC],
                lhs[Z_LOC] - rhs[Z_LOC]);
+}
+
+XYZ operator+ (const XYZ& lhs, const XYZ& rhs) {
+    return XYZ(lhs[X_LOC] + rhs[X_LOC],
+               lhs[Y_LOC] + rhs[Y_LOC],
+               lhs[Z_LOC] + rhs[Z_LOC]);
 }
 
 XYZ operator* (const XYZ& lhs, double rhs){

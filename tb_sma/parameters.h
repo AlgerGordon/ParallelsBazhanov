@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <vector>
 
 enum PARAMETERS_ENUM {
     R0_LOC = 0,
@@ -49,3 +50,30 @@ private:
 
 Parameters operator+ (const Parameters& lhs, const Parameters& rhs);
 
+
+enum INTERACTION_ENUM {
+    BB = 0,
+    AA,
+    AB
+};
+
+class InteractionParameters {
+public:
+    InteractionParameters(const Parameters& BB_params,
+                          const Parameters& AA_params,
+                          const Parameters& AB_params) {
+        BB_AA_BA.push_back(BB_params);
+        BB_AA_BA.push_back(AA_params);
+        BB_AA_BA.push_back(AB_params);
+    }
+
+    InteractionParameters(const Parameters& BB_params) {
+        BB_AA_BA.push_back(BB_params);
+    }
+
+    Parameters& operator[] (INTERACTION_ENUM inter_type) {return BB_AA_BA[inter_type];}
+    Parameters operator[] (INTERACTION_ENUM inter_type) const { return BB_AA_BA[inter_type];}
+
+private:
+    std::vector<Parameters> BB_AA_BA;
+};

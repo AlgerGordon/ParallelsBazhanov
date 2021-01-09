@@ -11,10 +11,9 @@ void TestAtomEnergy() {
         double r0 = a0 / sqrt(2);
         Parameters p(r0, 0.103, 0.0, 1.178, 10.928, 3.139);
         Structure str_ag_ag;
-        createStructure<ATOM_ENUM::AG>(str_ag_ag, a0, 5);
+        str_ag_ag.createStructure(a0, 5, ATOM_ENUM::AG);
         Matrix identity;
-        double atom_energy = atomEnergy<ZPERIOD::Z_ON>(
-                p, str_ag_ag, 57, identity);
+        double atom_energy = atomEnergy<ZPERIOD::Z_ON>({p}, str_ag_ag, 57, identity);
         std::cout.flush();
 
         std::cout << "\nAg:" << '\n';
@@ -30,9 +29,9 @@ void TestAtomEnergy() {
         double r0 = a0 / sqrt(2);;
         Parameters p(r0, 0.0855, 0.0, 1.224, 10.960, 2.278);
         Structure str_cu_cu;
-        createStructure<ATOM_ENUM::CU>(str_cu_cu, a0, 3);
+        str_cu_cu.createStructure( a0, 3, ATOM_ENUM::CU);
 
-        double atom_energy = atomEnergy<ZPERIOD::Z_ON>(p, str_cu_cu, 0,{});
+        double atom_energy = atomEnergy<ZPERIOD::Z_ON>(p, str_cu_cu, 0, {});
 
         std::cout << "\nCu:" << '\n';
         std::cout << "Table: " << -3.544  << " Model: " << atom_energy << '\n';
@@ -54,7 +53,7 @@ void TestAtomEnergy() {
         double r0 =  a0 / sqrt(2);
         Parameters p(r0, 0.105651, 0.010198, 1.17051, 10.8674, 3.09243);
         Structure str_cu_cu;
-        createStructure<ATOM_ENUM::AG>(str_cu_cu, a0, 3);
+        str_cu_cu.createStructure(a0, 3, ATOM_ENUM::AG);
         double atom_energy = atomEnergy<ZPERIOD::Z_ON>(p, str_cu_cu, 24, {});
 
         std::cout << "\nAg_1:" << '\n';
@@ -67,14 +66,15 @@ void TestAtomEnergy() {
     }
 }
 
-
-
 void TestTB_SMA() {
     TestRunner tr;
     RUN_TEST(tr, TestAtomEnergy);
     std::cout.flush();
     std::cerr.flush();
     RUN_TEST(tr, TestMaterialQuantities);
+    std::cout.flush();
+    std::cerr.flush();
+    RUN_TEST(tr, TestAlloyQuantities);
     std::cout.flush();
     std::cerr.flush();
 }

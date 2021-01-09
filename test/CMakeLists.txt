@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(PDP_test test_all.cpp
                         structure.ut.cpp
                         energy.ut.cpp
-                        quantities.ut.cpp)
+                        material_quantities.ut.cpp
+                        alloy_quantities.ut.cpp)
 
 target_link_libraries(PDP_test test_runner)
 target_link_libraries(PDP_test metallic_structures)
