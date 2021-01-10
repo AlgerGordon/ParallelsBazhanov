@@ -7,10 +7,10 @@
 int main() {
 
     TestRunner tr;
-    RUN_TEST(tr, TestMinimizeDist);
-    std::cout.flush();
-    std::cerr.flush();
-    Sleep(200);
+//    RUN_TEST(tr, TestMinimizeDist);
+//    std::cout.flush();
+//    std::cerr.flush();
+//    Sleep(200);
     RUN_TEST(tr, TestAtomEnergy);
     std::cout.flush();
     std::cerr.flush();
@@ -22,6 +22,12 @@ int main() {
     RUN_TEST(tr, TestAlloyQuantities);
     std::cout.flush();
     std::cerr.flush();
+
+    Sleep(200);
+//
+//    RUN_TEST(tr, TestInvTask);
+//    std::cout.flush();
+//    std::cerr.flush();
 
 
 //    TestStructure();

@@ -23,6 +23,7 @@ public:
         type_ = type;
     }
     XYZ pos() const {return pos_;}
+    XYZ& pos() {return pos_;}
     double& pos(size_t coord) {return pos_[coord];}
     ATOM_ENUM type() const { return type_; }
     void set_type(ATOM_ENUM a_type) { type_ = a_type;}

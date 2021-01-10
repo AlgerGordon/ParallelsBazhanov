@@ -26,28 +26,28 @@ enum DEF_MATRICES_ENUM {
 using Lattice = std::vector<Atom>;
 
 struct Structure {
-    int size;
-    XYZ period;
+    int str_size;
     Lattice lattice;
     ATOM_ENUM base_type;
+    double lattice_constant;
 
-    void createStructure(double lattice_constant, int new_size, ATOM_ENUM a_type) {
+    void createStructure(double lattice_const, int new_size, ATOM_ENUM a_type) {
         this->lattice = {};
-        this->size = new_size;
-        this->period = {size * lattice_constant, size * lattice_constant, size * lattice_constant};
+        this->lattice_constant = lattice_const;
+        this->str_size = new_size;
         this->base_type = a_type;
 
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                for (int k = 0; k < size; ++k) {
-                    this->lattice.emplace_back(Atom(a_type, (0 + i) * lattice_constant, (0 + j) * lattice_constant,
-                                                    (0 + k) * lattice_constant));
-                    this->lattice.emplace_back(Atom(a_type, (0.5 + i) * lattice_constant, (0.5 + j) * lattice_constant,
-                                                    (0 + k) * lattice_constant));
-                    this->lattice.emplace_back(Atom(a_type, (0 + i) * lattice_constant, (0.5 + j) * lattice_constant,
-                                                    (0.5 + k) * lattice_constant));
-                    this->lattice.emplace_back(Atom(a_type, (0.5 + i) * lattice_constant, (0 + j) * lattice_constant,
-                                                    (0.5 + k) * lattice_constant));
+        for (int i = 0; i < str_size; ++i) {
+            for (int j = 0; j < str_size; ++j) {
+                for (int k = 0; k < str_size; ++k) {
+                    this->lattice.emplace_back(Atom(a_type, (0 + i), (0 + j),
+                                                    (0 + k)));
+                    this->lattice.emplace_back(Atom(a_type, (0.5 + i), (0.5 + j),
+                                                    (0 + k)));
+                    this->lattice.emplace_back(Atom(a_type, (0 + i), (0.5 + j),
+                                                    (0.5 + k)));
+                    this->lattice.emplace_back(Atom(a_type, (0.5 + i), (0 + j),
+                                                    (0.5 + k)));
                 }
             }
         }
@@ -62,24 +62,24 @@ struct Structure {
     }
 
     void addDimerIn(ATOM_ENUM a_type) {
-        size_t kAtomInd1 = (size - 1) * 4 + 2;
-        size_t kAtomInd2 = (size - 1) * 4 + 3;
+        size_t kAtomInd1 = (str_size - 1) * 4 + 2;
+        size_t kAtomInd2 = (str_size - 1) * 4 + 3;
         lattice[kAtomInd1].set_type(a_type);
         lattice[kAtomInd2].set_type(a_type);
     }
 
     void removeFirstAtomOfDimerIn() {
-        size_t kAtomInd1 = (size - 1) * 4 + 2;
+        size_t kAtomInd1 = (str_size - 1) * 4 + 2;
         lattice[kAtomInd1].set_type(base_type);
     }
 
     void removeSecondAtomOfDimerIn() {
-        size_t kAtomInd2 = (size - 1) * 4 + 3;
+        size_t kAtomInd2 = (str_size - 1) * 4 + 3;
         lattice[kAtomInd2].set_type(base_type);
     }
 
     void addDimerOn(ATOM_ENUM a_type) {
-        XYZ tmp_pos = {0, 0, period[Z_LOC]};
+        XYZ tmp_pos = {0, 0, 1.0 * str_size};
         XYZ pos1 = lattice[0].pos() + tmp_pos;
         XYZ pos2 = lattice[1].pos() + tmp_pos;
         lattice.push_back(Atom(a_type, pos1));
@@ -87,7 +87,7 @@ struct Structure {
     }
 
     bool removeFirstAtomOfDimerOn() {
-        if (lattice.size() != 4 * this->size * this->size * this->size) {
+        if (lattice.size() != 4 * str_size * str_size * str_size) {
             lattice.pop_back();
             return true;
         }
@@ -95,7 +95,7 @@ struct Structure {
     }
 
     bool removeSecondAtomOfDimerOn() {
-        if (lattice.size() != (4 * this->size * this->size * this->size - 1)) {
+        if (lattice.size() != (4 * str_size * str_size * str_size - 1)) {
             lattice.pop_back();
             return true;
         }
@@ -112,23 +112,28 @@ int sgn(T val) {
 
 template<ZPERIOD zPeriodic>
 double minimizeDistance(Atom pivot_atom, Atom tmp_atom,
-                                         const XYZ& period,
-                        const Matrix& deformation, ATOM_ENUM structure_type,
+                                         //const XYZ& period,
+                                         double lattice_const,
+                                         double str_size,
+                        const Matrix& deformation,
                         DEF_MATRICES_ENUM defType = NO_DEF)  {
     XYZ vec;
     vec = tmp_atom.pos() - pivot_atom.pos();
 
     if (zPeriodic == ZPERIOD::Z_ON) {
-        tmp_atom.pos(Z_LOC) += ((std::abs(vec[Z_LOC]) < (period[Z_LOC] / 2))
+        tmp_atom.pos(Z_LOC) += ((std::abs(vec[Z_LOC]) < (1.0 * str_size/ 2))
                                 ? 0
-                                : -period[Z_LOC] * sgn(vec[Z_LOC]));
+                                : -1.0 * str_size * sgn(vec[Z_LOC]));
     }
 
     for (XYZ_ENUM coord : {X_LOC, Y_LOC}) {
-        tmp_atom.pos(coord) += ((std::abs(vec[coord]) < (period[coord] / 2))
+        tmp_atom.pos(coord) += ((std::abs(vec[coord]) < (1.0 * str_size / 2))
                                 ? 0
-                                : -period[coord] * sgn(vec[coord]));
+                                : -1.0 * str_size * sgn(vec[coord]));
     }
+
+    pivot_atom.pos() *= lattice_const;
+    tmp_atom.pos() *= lattice_const;
 
     if (defType != NO_DEF) {
         pivot_atom *= deformation;

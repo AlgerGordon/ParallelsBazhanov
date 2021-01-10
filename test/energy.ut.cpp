@@ -11,9 +11,9 @@ void TestAtomEnergy() {
         double r0 = a0 / sqrt(2);
         Parameters p(r0, 0.103, 0.0, 1.178, 10.928, 3.139);
         Structure str_ag_ag;
-        str_ag_ag.createStructure(a0, 5, ATOM_ENUM::AG);
+        str_ag_ag.createStructure(a0, 3, ATOM_ENUM::AG);
         Matrix identity;
-        double atom_energy = atomEnergy<ZPERIOD::Z_ON>({p}, str_ag_ag, 57, identity);
+        double atom_energy = atomEnergy<ZPERIOD::Z_ON>({p}, str_ag_ag, 0, identity);
         std::cout.flush();
 
         std::cout << "\nAg:" << '\n';
@@ -29,7 +29,7 @@ void TestAtomEnergy() {
         double r0 = a0 / sqrt(2);;
         Parameters p(r0, 0.0855, 0.0, 1.224, 10.960, 2.278);
         Structure str_cu_cu;
-        str_cu_cu.createStructure( a0, 3, ATOM_ENUM::CU);
+        str_cu_cu.createStructure(a0, 3, ATOM_ENUM::CU);
 
         double atom_energy = atomEnergy<ZPERIOD::Z_ON>(p, str_cu_cu, 0, {});
 

@@ -7,6 +7,7 @@
 #include "structure.h"
 
 enum QUANTITIES_ENUM {
+    LATTICE_CONSTANT_LOC = 0,
     E_COH_LOC,
     B_LOC,
     C11_LOC,
@@ -20,8 +21,10 @@ enum QUANTITIES_ENUM {
 
 class Quantities {
 public:
-    explicit Quantities(ATOM_ENUM type) : base_type_(type) {}
-    Quantities(double E_coh,
+    explicit Quantities(ATOM_ENUM base_type, ATOM_ENUM alloy_type)
+            : base_type_(base_type), alloy_type_(alloy_type) {}
+    Quantities(double lattice_constant,
+               double E_coh,
                double B,
                double C11,
                double C12,
@@ -32,6 +35,7 @@ public:
                ATOM_ENUM base_type,
                ATOM_ENUM alloy_type) : base_type_(base_type)
                                         , alloy_type_(alloy_type)  {
+        q_[LATTICE_CONSTANT_LOC] = lattice_constant;
         q_[E_COH_LOC] = E_coh;
         q_[B_LOC] = B;
         q_[C11_LOC] = C11;
@@ -43,16 +47,16 @@ public:
     }
 
     double& operator[] (QUANTITIES_ENUM pos) {return q_[pos];}
-    const double& operator[] (QUANTITIES_ENUM pos) const { return q_[pos];}
-    ATOM_ENUM base_type() { return base_type_; }
-    ATOM_ENUM alloy_type() { return alloy_type_; }
+    double operator[] (QUANTITIES_ENUM pos) const { return q_[pos];}
+    ATOM_ENUM base_type() const { return base_type_; }
+    ATOM_ENUM alloy_type() const { return alloy_type_; }
 private:
     double q_[QUANTITIES_SIZE] = {};
     ATOM_ENUM base_type_;
     ATOM_ENUM alloy_type_;
 };
 
-std::ostream& operator << (std::ostream& os, Quantities q);
+std::ostream& operator << (std::ostream& os, const Quantities& q);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -83,13 +87,13 @@ public:
 
     double& operator[] (M_QUANTITIES_ENUM pos) {return q_[pos];}
     const double& operator[] (M_QUANTITIES_ENUM pos) const { return q_[pos];}
-    ATOM_ENUM base_type() { return base_type_; }
+    ATOM_ENUM base_type() const { return base_type_; }
 private:
     double q_[M_QUANTITIES_SIZE] = {};
     ATOM_ENUM base_type_;
 };
 
-std::ostream& operator << (std::ostream& os, MaterialQuantities q);
+std::ostream& operator << (std::ostream& os, const MaterialQuantities& q);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -115,15 +119,22 @@ public:
 
     double& operator[] (A_QUANTITIES_ENUM pos) {return q_[pos];}
     const double& operator[] (A_QUANTITIES_ENUM pos) const { return q_[pos];}
-    ATOM_ENUM alloy_type() { return alloy_type_; }
-    ATOM_ENUM base_type() { return base_type_; }
+    ATOM_ENUM alloy_type() const { return alloy_type_; }
+    ATOM_ENUM base_type() const { return base_type_; }
 private:
     double q_[A_QUANTITIES_SIZE] = {};
     ATOM_ENUM alloy_type_;
     ATOM_ENUM base_type_;
 };
 
-std::ostream& operator << (std::ostream& os, AlloyQuantities q);
+std::ostream& operator << (std::ostream& os, const AlloyQuantities& q);
+
+struct ConstsForOptimization {
+    double E_Acoh;
+    ATOM_ENUM alloy_type_;
+    ATOM_ENUM base_type_;
+};
+
 
 // Test
 void TestMaterialQuantities();

@@ -23,7 +23,8 @@ Quantities computeQuantities(const InteractionParameters& aip,
                                         size_t kAlloyAtomId = 54);
 
 template<ZPERIOD zPeriodic>
-double atomEnergy(const InteractionParameters& aip, const Structure& str, int atomId,
+double atomEnergy(const InteractionParameters& aip, const Structure& str,
+                  int atomId,
                   const Matrix& deformation,
                   DEF_MATRICES_ENUM defType = NO_DEF) {
 
@@ -33,8 +34,10 @@ double atomEnergy(const InteractionParameters& aip, const Structure& str, int at
     double repulsive_energy = 0, band_energy = 0;
     double r_ij;
 
-    XYZ deformed_period = deformation * str.period;
-    double cutoff = 2 * fmax(fmax(deformed_period[0], deformed_period[1]), deformed_period[2]) / str.size;
+    XYZ deformed_period = {1.0 * str.str_size, 1.0 * str.str_size, 1.0 * str.str_size};
+    deformed_period *= deformation;
+    double delta =  fmax(fmax(deformed_period[0], deformed_period[1]), deformed_period[2]);
+    double cutoff = 1.7 * delta / str.str_size * str.lattice_constant;
 
     for (size_t j = 0; j < str.lattice.size(); ++j) {
         if (atomId != j) {
@@ -44,8 +47,11 @@ double atomEnergy(const InteractionParameters& aip, const Structure& str, int at
             } else {
                 cur_inter = AB;
             }
-            r_ij = minimizeDistance<zPeriodic>(pivot_atom, tmp_atom, str.period, deformation, str.base_type, defType);
-
+            r_ij = minimizeDistance<zPeriodic>(pivot_atom, tmp_atom,
+                                               // str.period,
+                                               str.lattice_constant,
+                                               str.str_size,
+                                               deformation, defType);
             if (r_ij < cutoff) {
                 repulsive_energy +=
                         (aip[cur_inter][A1_LOC] * (r_ij / aip[cur_inter][R0_LOC] - 1) + aip[cur_inter][A0_LOC])

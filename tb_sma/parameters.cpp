@@ -22,5 +22,7 @@ Parameters operator+ (const Parameters& lhs, const Parameters& rhs) {
             );
 }
 
-
+double ParametersEdges::operator [] (size_t ind) const {
+    return edges[ind];
+}
 

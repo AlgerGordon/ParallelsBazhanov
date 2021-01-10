@@ -5,7 +5,7 @@
 
 #include <quantities.h>
 
-std::ostream& operator << (std::ostream& os, Quantities q) {
+std::ostream& operator << (std::ostream& os, const Quantities& q) {
     switch (q.base_type())
     {
         case ATOM_ENUM::AU:
@@ -76,7 +76,7 @@ std::ostream& operator << (std::ostream& os, Quantities q) {
     return os;
 }
 
-std::ostream& operator << (std::ostream& os, MaterialQuantities q) {
+std::ostream& operator << (std::ostream& os, const MaterialQuantities& q) {
     switch (q.base_type())
     {
         case ATOM_ENUM::AU:
@@ -105,7 +105,7 @@ std::ostream& operator << (std::ostream& os, MaterialQuantities q) {
     return os;
 }
 
-std::ostream& operator << (std::ostream& os, AlloyQuantities q){
+std::ostream& operator << (std::ostream& os, const AlloyQuantities& q){
     switch (q.alloy_type())
     {
         case ATOM_ENUM::AU:

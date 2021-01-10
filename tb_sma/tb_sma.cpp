@@ -16,7 +16,8 @@ MaterialQuantities computeMaterialQuantities(const Parameters& p, Structure& str
     double e_equilibrium = e_coh * kNumberOfAtoms;
 
     double e_minus = 0, e_plus = 0;
-    double v0 = str.period[0] * str.period[1] * str.period[2];
+    double v0 = str.str_size * str.str_size * str.str_size
+                * str.lattice_constant * str.lattice_constant * str.lattice_constant;
 
     double magic_const = 0.8018993929636421;
 
@@ -131,7 +132,8 @@ Quantities computeQuantities(const InteractionParameters& aip,
     double E_B = E_Bcoh * kNumberOfAtoms;
 
     double E_minus = 0, E_plus = 0;
-    double v0 = str.period[0] * str.period[1] * str.period[2];
+    double v0 = str.str_size * str.str_size * str.str_size
+                * str.lattice_constant * str.lattice_constant * str.lattice_constant;
 
     double magic_const = 0.8018993929636421;
 
@@ -215,6 +217,6 @@ Quantities computeQuantities(const InteractionParameters& aip,
 
     double E_onDim = (E_dim_surf_on - E_surf) - 2 * (E_adatom_surf_on - E_surf);
 
-    return {E_Bcoh, B, C11, C12, C44, E_sol, E_inDim, E_onDim, str.base_type, alloy_type};
+    return {str.lattice_constant, E_Bcoh, B, C11, C12, C44, E_sol, E_inDim, E_onDim, str.base_type, alloy_type};
 
 }

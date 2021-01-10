@@ -4,6 +4,7 @@
 
 #pragma once
 #include <vector>
+#include <ostream>
 
 enum PARAMETERS_ENUM {
     R0_LOC = 0,
@@ -18,6 +19,7 @@ enum PARAMETERS_ENUM {
 
 class Parameters {
 public:
+    Parameters() = default;
     Parameters(const double r0,
                const double A0,
                const double A1,
@@ -33,23 +35,24 @@ public:
         p_[Q_LOC] = q;
     }
 
-    const double& r0() const {return p_[R0_LOC];};
-    const double& A0() const {return p_[A0_LOC];}
-    const double& A1() const {return p_[A1_LOC];}
-    const double& xi() const {return p_[XI_LOC];}
-    const double& p() const {return p_[P_LOC];}
-    const double& q() const {return p_[Q_LOC];}
+    double r0() const {return p_[R0_LOC];};
+    double A0() const {return p_[A0_LOC];}
+    double A1() const {return p_[A1_LOC];}
+    double xi() const {return p_[XI_LOC];}
+    double p() const {return p_[P_LOC];}
+    double q() const {return p_[Q_LOC];}
 
     double& operator[] (int pos) {return p_[pos];}
     double operator[] (int pos) const { return p_[pos];}
 
     Parameters& operator+= (const Parameters& o);
 private:
-    double p_[PARAMETERS_SIZE];
+    double p_[PARAMETERS_SIZE] = {};
 };
 
 Parameters operator+ (const Parameters& lhs, const Parameters& rhs);
 
+std::ostream operator << (std::ostream os, const Parameters& ip);
 
 enum INTERACTION_ENUM {
     BB = 0,
@@ -59,21 +62,35 @@ enum INTERACTION_ENUM {
 
 class InteractionParameters {
 public:
+    explicit InteractionParameters() = default;
+
     InteractionParameters(const Parameters& BB_params,
                           const Parameters& AA_params,
                           const Parameters& AB_params) {
-        BB_AA_BA.push_back(BB_params);
-        BB_AA_BA.push_back(AA_params);
-        BB_AA_BA.push_back(AB_params);
+        BB_AA_BA[0] = BB_params;
+        BB_AA_BA[1] = AA_params;
+        BB_AA_BA[2] = AB_params;
     }
 
     InteractionParameters(const Parameters& BB_params) {
-        BB_AA_BA.push_back(BB_params);
+        BB_AA_BA[0] = BB_params;
     }
 
     Parameters& operator[] (INTERACTION_ENUM inter_type) {return BB_AA_BA[inter_type];}
     Parameters operator[] (INTERACTION_ENUM inter_type) const { return BB_AA_BA[inter_type];}
 
 private:
-    std::vector<Parameters> BB_AA_BA;
+    Parameters BB_AA_BA[3];
+};
+
+std::ostream operator << (std::ostream os, const InteractionParameters& ip);
+
+struct ParametersEdges {
+    double edges[18] = {0, 10,      // r0
+                        -10, 10,    // A0
+                        10, 10,     // A1
+                        0, 10,      // xi
+                        0, 20,      // p
+                        0, 20};     // q
+    double operator [] (size_t ind) const;
 };

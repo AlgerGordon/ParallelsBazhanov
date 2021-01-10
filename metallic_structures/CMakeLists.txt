@@ -3,6 +3,7 @@ project(metallic_structures)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(GCC_COVERAGE_COMPILE_FLAGS "-O3 -Wall --std=c++1z")
 
 add_library(metallic_structures atom.h
                                 quantities.h quantities.cpp
