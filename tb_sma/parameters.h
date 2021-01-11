@@ -26,7 +26,6 @@ public:
                const double xi,
                const double p,
                const double q){
-        //  lattice_constant
         p_[R0_LOC] = r0;
         p_[A0_LOC] = A0;
         p_[A1_LOC] = A1;
@@ -45,14 +44,18 @@ public:
     double& operator[] (int pos) {return p_[pos];}
     double operator[] (int pos) const { return p_[pos];}
 
-    Parameters& operator+= (const Parameters& o);
+    Parameters& operator*= (double alpha);
+    Parameters& operator += (const Parameters& o);
+    Parameters& operator /= (size_t N);
+    Parameters operator * (double alpha);
 private:
     double p_[PARAMETERS_SIZE] = {};
 };
 
 Parameters operator+ (const Parameters& lhs, const Parameters& rhs);
+Parameters operator- (const Parameters& lhs, const Parameters& rhs);
 
-std::ostream operator << (std::ostream os, const Parameters& ip);
+std::ostream& operator << (std::ostream& os, const Parameters& p);
 
 enum INTERACTION_ENUM {
     BB = 0,
@@ -79,18 +82,24 @@ public:
     Parameters& operator[] (INTERACTION_ENUM inter_type) {return BB_AA_BA[inter_type];}
     Parameters operator[] (INTERACTION_ENUM inter_type) const { return BB_AA_BA[inter_type];}
 
+    InteractionParameters& operator += (const InteractionParameters& add_params);
+    InteractionParameters operator * (double alpha);
+    InteractionParameters& operator /= (size_t N);
+    InteractionParameters& operator *= (double alpha);
+    InteractionParameters operator - (const InteractionParameters& add_params);
+    InteractionParameters operator + (const InteractionParameters& add_params);
 private:
     Parameters BB_AA_BA[3];
 };
 
-std::ostream operator << (std::ostream os, const InteractionParameters& ip);
+std::ostream& operator << (std::ostream& os, const InteractionParameters& ip);
 
 struct ParametersEdges {
     double edges[18] = {0, 10,      // r0
                         -10, 10,    // A0
-                        10, 10,     // A1
+                        -10, 10,     // A1
                         0, 10,      // xi
-                        0, 20,      // p
-                        0, 20};     // q
+                        0, 30,      // p
+                        0, 10};     // q
     double operator [] (size_t ind) const;
 };

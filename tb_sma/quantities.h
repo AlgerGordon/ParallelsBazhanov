@@ -5,6 +5,7 @@
 #pragma once
 #include <iostream>
 #include "structure.h"
+#include "parameters.h"
 
 enum QUANTITIES_ENUM {
     LATTICE_CONSTANT_LOC = 0,
@@ -21,8 +22,12 @@ enum QUANTITIES_ENUM {
 
 class Quantities {
 public:
-    explicit Quantities(ATOM_ENUM base_type, ATOM_ENUM alloy_type)
-            : base_type_(base_type), alloy_type_(alloy_type) {}
+    explicit Quantities(ATOM_ENUM base_type,
+                        ATOM_ENUM alloy_type,
+                        double E_Acoh)
+                        : base_type_(base_type),
+                        alloy_type_(alloy_type),
+                        E_Acoh_(E_Acoh) {}
     Quantities(double lattice_constant,
                double E_coh,
                double B,
@@ -32,6 +37,7 @@ public:
                double E_sol,
                double E_dim_in,
                double E_dim_on,
+               double E_Acoh,
                ATOM_ENUM base_type,
                ATOM_ENUM alloy_type) : base_type_(base_type)
                                         , alloy_type_(alloy_type)  {
@@ -44,14 +50,22 @@ public:
         q_[E_SOL_LOC] = E_sol;
         q_[E_DIM_IN_LOC] = E_dim_in;
         q_[E_DIM_ON_LOC] = E_dim_on;
+        E_Acoh_ = E_Acoh;
     }
 
     double& operator[] (QUANTITIES_ENUM pos) {return q_[pos];}
     double operator[] (QUANTITIES_ENUM pos) const { return q_[pos];}
     ATOM_ENUM base_type() const { return base_type_; }
     ATOM_ENUM alloy_type() const { return alloy_type_; }
+    double E_Acoh() const {return E_Acoh_; }
+
+    void computeQuantities(const InteractionParameters& aip,
+                                 Structure& str,
+                                 double def_rate = 0.005,
+                                 size_t kAlloyAtomId = 54);
 private:
     double q_[QUANTITIES_SIZE] = {};
+    double E_Acoh_;
     ATOM_ENUM base_type_;
     ATOM_ENUM alloy_type_;
 };
@@ -129,13 +143,8 @@ private:
 
 std::ostream& operator << (std::ostream& os, const AlloyQuantities& q);
 
-struct ConstsForOptimization {
-    double E_Acoh;
-    ATOM_ENUM alloy_type_;
-    ATOM_ENUM base_type_;
-};
-
 
 // Test
 void TestMaterialQuantities();
 void TestAlloyQuantities();
+void TestQuantities();

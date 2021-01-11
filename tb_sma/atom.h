@@ -22,6 +22,7 @@ public:
     Atom(ATOM_ENUM type, XYZ pos) : pos_(pos) {
         type_ = type;
     }
+    Atom() = default;
     XYZ pos() const {return pos_;}
     XYZ& pos() {return pos_;}
     double& pos(size_t coord) {return pos_[coord];}

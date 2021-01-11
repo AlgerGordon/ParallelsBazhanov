@@ -9,9 +9,7 @@
 
 double default_loss(const Quantities& tmp, const Quantities& target);
 
-
-
-struct NelderMeaParams {
+struct NelderMeadParams {
     double alpha = 1;
     double beta = 0.5;
     double gamma = 2;
@@ -19,10 +17,10 @@ struct NelderMeaParams {
 };
 
 
-InteractionParameters nelder_mead(const Quantities& target_quantities,
-                                        std::function<double(const Quantities&, const Quantities&)> loss_func,
-                                        const ConstsForOptimization& cfo,
+std::pair<double, InteractionParameters> nelder_mead(const Quantities& target_quantities,
+                                        const std::function<double(const Quantities&, const Quantities&)>& loss_func,
                                         double accuracy = 1e-3,
-                                        size_t max_iter = 1e+6,
-                                        const NelderMeaParams& nmp = {},
+                                        const NelderMeadParams& nmp = {},
+                                        size_t max_iter = 10'000,
+                                        size_t str_size = 3,
                                         const ParametersEdges& pe = {});

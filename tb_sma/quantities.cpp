@@ -34,19 +34,19 @@ std::ostream& operator << (std::ostream& os, const Quantities& q) {
     switch (q.alloy_type())
     {
         case ATOM_ENUM::AU:
-            os << "AU" << std::endl;
+            os << "AU";
             break;
         case ATOM_ENUM::CO:
-            os << "CO" << std::endl;
+            os << "CO";
             break;
         case ATOM_ENUM::CU:
-            os << "CU" << std::endl;
+            os << "CU";
             break;
         case ATOM_ENUM::AG:
-            os << "AG" << std::endl;
+            os << "AG";
             break;
         default:
-            os << "Unknown material:" << std::endl;
+            os << "Unknown material";
             break;
     }
 
