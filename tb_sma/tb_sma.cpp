@@ -124,6 +124,8 @@ void Quantities::computeQuantities(const InteractionParameters& aip,
     DefMatrices plus_def(def_rate);
     DefMatrices minus_def(-def_rate);
 
+    str.lattice_constant = aip[BB][R0_LOC] * sqrt(2);
+
     double E_Bcoh = atomEnergy<ZPERIOD::Z_ON>(aip, str, 0, plus_def.to_vec_[NO_DEF]);
 
     const int kNumberOfAtoms = str.lattice.size();

@@ -19,7 +19,7 @@ struct NelderMeadParams {
 
 std::pair<double, InteractionParameters> nelder_mead(const Quantities& target_quantities,
                                         const std::function<double(const Quantities&, const Quantities&)>& loss_func,
-                                        double accuracy = 1e-3,
+                                        double accuracy = 1e-1,
                                         const NelderMeadParams& nmp = {},
                                         size_t max_iter = 10'000,
                                         size_t str_size = 3,

@@ -95,11 +95,11 @@ private:
 std::ostream& operator << (std::ostream& os, const InteractionParameters& ip);
 
 struct ParametersEdges {
-    double edges[18] = {0, 10,      // r0
-                        -10, 10,    // A0
-                        -10, 10,     // A1
-                        0, 10,      // xi
-                        0, 30,      // p
+    double edges[18] = {1, 7,      // r0
+                        -3, 3,    // A0
+                        -5, 5,     // A1
+                        0, 5,      // xi
+                        3, 20,      // p
                         0, 10};     // q
     double operator [] (size_t ind) const;
 };

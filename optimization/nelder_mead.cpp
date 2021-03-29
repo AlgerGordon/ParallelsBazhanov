@@ -5,6 +5,7 @@
 
 #include <random>
 #include <ctime>
+#include <iomanip>
 #include "optimization_methods.h"
 
 std::pair<double, InteractionParameters> nelder_mead(const Quantities& trg_quantities,
@@ -201,11 +202,12 @@ std::pair<double, InteractionParameters> nelder_mead(const Quantities& trg_quant
         x_center *= 0.0;
         need_compr = false;
         if ((count_iter % 500) == 0 ) {
-            std::cout << "Iteration #" << count_iter << " " << loss_values[l_ind] << " " << l_ind << '\n';
-            if (abs(prev_value - loss_value[l_ind]) < 1e-7) {
+            std::cout << "Iteration #" << count_iter << " " << std::fixed << std::setprecision(7) << loss_values[l_ind] << " " << l_ind << '\n';
+            if (std::abs(prev_value - loss_values[l_ind]) < 1e-7) {
                 std::cout << "Too small improvement. Quit!" << '\n';
                 break;
             }
+            prev_value = loss_values[l_ind];
         }
         count_iter++;
         // break;

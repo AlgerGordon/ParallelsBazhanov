@@ -19,3 +19,6 @@ target_include_directories(optimization PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(optimization tb_sma)
 target_link_libraries(optimization ${OpenMP_CXX_LIBRARIES})
+
+add_executable(InvTask nelder_mead.cpp losses.cpp tb_sma_optimization.cpp)
+target_link_libraries(InvTask tb_sma)

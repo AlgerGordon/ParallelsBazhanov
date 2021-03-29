@@ -23,7 +23,7 @@ double default_loss(const Quantities& tmp, const Quantities& target) {
                          10, // C11
                          10, // C12
                          10, // C44
-                         1, // E_sol
+                         10, // E_sol
                          10, // E_dim_in
                          10  // E_dim_on
                          };
